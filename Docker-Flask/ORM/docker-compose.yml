@@ -1,17 +1,34 @@
 version: '3.8'
 
 services:
-  web:
-    # Construir usando el Dockerfile del directorio actual (.)
+  # Contenedor de la API (Flask)
+  api:
     build: .
-    container_name: flask_login_backend
-    
-    # Mapeo de puertos: Puerto PC : Puerto Contenedor
     ports:
       - "5000:5000"
-    
-    # Volúmenes: Sincroniza tu carpeta actual con /app en el contenedor.
-    # Esto permite que si cambias el código en tu PC, se actualice en Docker
-    # sin tener que reconstruir la imagen (gracias al debug=True de Flask).
     volumes:
       - .:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Contenedor de la Base de Datos (PostgreSQL 17)
+  postgres:
+    image: postgres:17
+    container_name: postgres173CV231AGO2026
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

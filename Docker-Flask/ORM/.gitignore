@@ -1,0 +1,10 @@
+# Base de datos PostgreSQL
+data/
+*/data/
+
+# Archivos temporales de Android Studio
+.idea/
+.gradle/
+build/
+local.properties
+*.iml
